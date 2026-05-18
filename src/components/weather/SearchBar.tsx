@@ -1,3 +1,4 @@
+// src/components/weather/SearchBar.tsx
 interface SearchBarProps {
   city: string
   setCity: (value: string) => void
@@ -16,7 +17,7 @@ export default function SearchBar({
       <input
         type="text"
         placeholder="Digite uma cidade"
-        className="input input-bordered w-full"
+        className="input input-bordered w-full px-4"
         value={city}
         onChange={(e) => setCity(e.target.value)}
         onKeyDown={(e) => {
