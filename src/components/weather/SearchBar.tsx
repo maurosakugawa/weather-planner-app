@@ -29,7 +29,7 @@ export default function SearchBar({
       />
 
       <button
-        className="btn btn-primary"
+        className="btn btn-primary  text-white"
         onClick={onSearch}
         disabled={loading}
       >

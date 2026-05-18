@@ -3,10 +3,12 @@ import { useState } from "react";
 
 import SearchBar from "../components/weather/SearchBar";
 import WeatherCard from "../components/weather/WeatherCard";
-
 import { getWeatherByCity } from "../services/weatherService";
-
 import type { WeatherData } from "../types/weather";
+
+import { getForecastByCity } from "../services/forecastService";
+import ForecastList from "../components/forecast/ForecastList";
+import type { ForecastItem } from "../types/forecast";
 
 export default function Home() {
   const [city, setCity] = useState("");
@@ -14,6 +16,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastSearchTime, setLastSearchTime] = useState(0);
+  const [forecast, setForecast] = useState<ForecastItem[]>([]);
 
   async function handleSearch() {
     if (!city) return;
@@ -38,7 +41,14 @@ export default function Home() {
 
         const data = await getWeatherByCity(city);
         setWeather(data);
+        const forecastData = await getForecastByCity(city);
 
+        const fileredForecast = forecastData.list.filter((item) => {
+            item.dt_txt.includes("12:00:00")
+        });
+    
+        setForecast(fileredForecast);
+        
     } catch (error) {
         console.error(error);
         setError("Cidade não encontrada");
@@ -82,6 +92,10 @@ export default function Home() {
             {weather && (
             <WeatherCard data={weather} />
             )}
+
+            {forecast.length > 0 && (
+            <ForecastList items={forecast} />
+            )}            
 
         </div>
 
