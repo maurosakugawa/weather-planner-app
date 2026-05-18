@@ -10,6 +10,10 @@ export default function WeatherCard({
   return (
     <div className="card bg-base-100 shadow-xl mt-6">
       <div className="card-body">
+        <img
+          src={`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`}
+          alt="Ícone do clima"
+        />
         <h2 className="card-title">
           {data.name}
         </h2>

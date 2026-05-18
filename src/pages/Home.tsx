@@ -10,16 +10,25 @@ import type { WeatherData } from "../types/weather";
 export default function Home() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSearch() {
     if (!city) return;
 
     try {
-      const data = await getWeatherByCity(city);
-      setWeather(data);
+
+        setLoading(true);
+        setError("");
+
+        const data = await getWeatherByCity(city);
+        setWeather(data);
+
     } catch (error) {
-      console.error(error);
-      alert("Cidade não encontrada");
+        console.error(error);
+        alert("Cidade não encontrada");
+    } finally {
+        setLoading(false);
     }
   }
 
@@ -34,7 +43,14 @@ export default function Home() {
           city={city}
           setCity={setCity}
           onSearch={handleSearch}
+          loading={loading}
         />
+
+        {error && (
+          <div className="alert alert-error mt-4">
+            <span>{error}</span>            
+          </div>
+        )}
 
         {weather && (
           <WeatherCard data={weather} />
