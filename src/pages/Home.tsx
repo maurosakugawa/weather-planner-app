@@ -10,7 +10,7 @@ import { getForecastByCity } from "../services/forecastService";
 import ForecastList from "../components/forecast/ForecastList";
 import type { ForecastItem } from "../types/forecast";
 
-
+import WeatherParticles from "../components/effects/WeatherParticles";
 import { normalizeCityName } from "../utils/cityAliases";
 import { resolveWeatherTheme } from "../themes/weatherThemeResolver";
 
@@ -74,44 +74,101 @@ export default function Home() {
     const forecastDays = 5;
     const {
         theme,
-        icon: WeatherIcon,
         animation,
+        particle,
+        background,
+        icon: WeatherIcon,
+        
     } = resolveWeatherTheme(currentWeather, isNight);
 
     return (
-    <main className={`min-h-screen ${theme.background} flex items-center justify-center p-6 transition-all duration-1000`}>
-        
-        <div className="w-full max-w-xl">
-        
+
+        <main
+            className={`
+            relative overflow-hidden
+            min-h-screen
+            ${theme.background}
+            ${animation.background}
+            flex items-center justify-center p-6
+            transition-all duration-1000
+            `}
+        >
+
+            {/* Overlay visual */}
+            <div
+            className={`
+                absolute inset-0
+                ${background.overlay}
+                ${background.blend}
+            `}
+            />
+
+            {/* Sistema de partículas */}
+            <WeatherParticles
+            type={particle.type}
+            />
+
+            {/* Conteúdo principal */}
+            <div className="relative z-10 w-full max-w-xl">
+
             {/* Header */}
             <div className="mb-6 md:mb-8 lg:mb-10 text-center px-4">
-                <h1 className={`
-                    text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
-                    font-black mb-2 md:mb-3 
+
+                {WeatherIcon && (
+                <WeatherIcon
+                    className={`
+                    w-16 h-16 mx-auto mb-4
+                    ${theme.accent}
+                    ${theme.iconGlow}
+                    ${animation.icon}
+                    `}
+                />
+                )}
+
+                <h1
+                className={`
+                    text-2xl sm:text-3xl md:text-4xl lg:text-5xl
+                    font-black mb-2 md:mb-3
                     ${theme.textPrimary}
-                `}>
-                    Planejador de Clima
+                `}
+                >
+                Planejador de Clima
                 </h1>
 
-                <p className={`
-                    text-sm sm:text-base md:text-lg 
+                <p
+                className={`
+                    text-sm sm:text-base md:text-lg
                     ${theme.textSecondary}
                     max-w-2xl mx-auto
-                `}>
-                    Planeje seus compromissos com base na previsão do tempo
+                `}
+                >
+                Planeje seus compromissos com base na previsão do tempo
                 </p>
             </div>
 
             {/* Card principal */}
-            <div className={`card ${theme.glass} backdrop-blur-xl border ${theme.cardBorder} shadow-2xl p-10 w-full max-w-xl`}>      
+            <div
+                className={`
+                card
+                ${theme.glass}
+                ${theme.cardBorder}
+                ${animation.card}
+                backdrop-blur-xl
+                border
+                shadow-2xl
+                p-10
+                w-full max-w-xl
+                `}
+            >
+
                 <SearchBar
-                    city={city}
-                    setCity={setCity}
-                    onSearch={handleSearch}
-                    loading={loading}
-                    textPrimary={theme.textPrimary}
-                    glass={theme.glass}
-                    cardBorder={theme.cardBorder}
+                city={city}
+                setCity={setCity}
+                onSearch={handleSearch}
+                loading={loading}
+                textPrimary={theme.textPrimary}
+                glass={theme.glass}
+                cardBorder={theme.cardBorder}
                 />
 
                 {error && (
@@ -140,12 +197,12 @@ export default function Home() {
                     glass={theme.glass}
                     cardBorder={theme.cardBorder}
                 />
-                )}            
+                )}
 
             </div>
 
-        </div>
+            </div>
 
-    </main>
+        </main>
     );
 }

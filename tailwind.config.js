@@ -18,7 +18,7 @@ export default {
 
         // Cloud => Nublado
         "cloud-drift":
-          "cloudDrift 20s linear infinite",
+          "cloudDrift linear infinite",
 
         // Rain => Chuva
         rain:
@@ -55,7 +55,7 @@ export default {
 
         cloudDrift: {
           "0%": {
-            transform: "translateX(0px)",
+            transform: "translateX(-10px)",
           },
 
           "50%": {
@@ -63,7 +63,7 @@ export default {
           },
 
           "100%": {
-            transform: "translateX(0px)",
+            transform: "translateX(110px)",
           },
         },
 
