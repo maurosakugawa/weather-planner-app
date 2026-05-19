@@ -10,6 +10,9 @@ import { getForecastByCity } from "../services/forecastService";
 import ForecastList from "../components/forecast/ForecastList";
 import type { ForecastItem } from "../types/forecast";
 
+import { getWeatherTheme } from "../utils/weatherTheme";
+import { normalizeCityName } from "../utils/cityAliases";
+
 export default function Home() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -17,9 +20,13 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [lastSearchTime, setLastSearchTime] = useState(0);
   const [forecast, setForecast] = useState<ForecastItem[]>([]);
+    
 
   async function handleSearch() {
-    if (!city) return;
+    if (!city) {
+        setError("Digite uma cidade.");
+        return;
+    }
     
     if (city.length < 3) {
       setError("Digite pelo menos 3 caracteres.");
@@ -31,7 +38,9 @@ export default function Home() {
       setError("Por favor, aguarde um momento antes de fazer outra busca.");
       return;
     }
-
+    
+    const normalizedCity = normalizeCityName(city);
+    
     setLastSearchTime(now);
 
     try {
@@ -39,15 +48,13 @@ export default function Home() {
         setLoading(true);
         setError("");
 
-        const data = await getWeatherByCity(city);
+        const data = await getWeatherByCity(normalizedCity);
         setWeather(data);
-        const forecastData = await getForecastByCity(city);
-
-        const fileredForecast = forecastData.list.filter((item) => {
-            item.dt_txt.includes("12:00:00")
-        });
+        const forecastData = await getForecastByCity(normalizedCity);
+        
+        const filteredForecast = forecastData.list.filter((item) => item.dt_txt.includes("12:00:00"));
     
-        setForecast(fileredForecast);
+        setForecast(filteredForecast);
         
     } catch (error) {
         console.error(error);
@@ -57,47 +64,80 @@ export default function Home() {
     }
   }
 
+    const currentTime = weather?.dt ?? 0;
+    const sunrise = weather?.sys.sunrise ?? 0;
+    const sunset = weather?.sys.sunset ?? 0;
+    const isNight = currentTime < sunrise || currentTime > sunset;
+
+    const currentWeather = weather?.weather[0].main;
+    const forecastDays = 5;
+    const theme = getWeatherTheme(currentWeather, isNight);
+
     return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-950 flex items-center justify-center p-6">
+    <main className={`min-h-screen ${theme.background} flex items-center justify-center p-6 transition-all duration-1000`}>
         
         <div className="w-full max-w-xl">
         
-        {/* Header */}
-        <div className="mb-8 text-center">
-            <h1 className="text-5xl font-black text-white">
-            Weather Planner App
-            </h1>
+            {/* Header */}
+            <div className="mb-6 md:mb-8 lg:mb-10 text-center px-4">
+                <h1 className={`
+                    text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
+                    font-black mb-2 md:mb-3 
+                    ${theme.textPrimary}
+                `}>
+                    Planejador de Clima
+                </h1>
 
-            <p className="text-white/60 mt-3">
-            Seu dashboard inteligente de clima.
-            </p>
-        </div>
-
-        {/* Card principal */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8">
-            
-            <SearchBar
-            city={city}
-            setCity={setCity}
-            onSearch={handleSearch}
-            loading={loading}
-            />
-
-            {error && (
-            <div className="alert alert-error mt-4">
-                <span>{error}</span>
+                <p className={`
+                    text-sm sm:text-base md:text-lg 
+                    ${theme.textSecondary}
+                    max-w-2xl mx-auto
+                `}>
+                    Planeje seus compromissos com base na previsão do tempo
+                </p>
             </div>
-            )}
 
-            {weather && (
-            <WeatherCard data={weather} />
-            )}
+            {/* Card principal */}
+            <div className={`card ${theme.glass} backdrop-blur-xl border ${theme.cardBorder} shadow-2xl p-10 w-full max-w-xl`}>      
+                <SearchBar
+                    city={city}
+                    setCity={setCity}
+                    onSearch={handleSearch}
+                    loading={loading}
+                    textPrimary={theme.textPrimary}
+                    glass={theme.glass}
+                    cardBorder={theme.cardBorder}
+                />
 
-            {forecast.length > 0 && (
-            <ForecastList items={forecast} />
-            )}            
+                {error && (
+                <div className="alert alert-error mt-4">
+                    <span>{error}</span>
+                </div>
+                )}
 
-        </div>
+                {weather && (
+                <WeatherCard
+                    data={weather}
+                    themeGlow={theme.cardGlow}
+                    textPrimary={theme.textPrimary}
+                    textSecondary={theme.textSecondary}
+                    glass={theme.glass}
+                    cardBorder={theme.cardBorder}
+                />
+                )}
+
+                {forecast.length > 0 && (
+                <ForecastList
+                    items={forecast}
+                    days={forecastDays}
+                    textPrimary={theme.textPrimary}
+                    textSecondary={theme.textSecondary}
+                    glass={theme.glass}
+                    cardBorder={theme.cardBorder}
+                />
+                )}            
+
+            </div>
 
         </div>
 

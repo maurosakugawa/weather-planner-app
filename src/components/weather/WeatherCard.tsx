@@ -3,57 +3,75 @@ import type { WeatherData } from "../../types/weather";
 
 interface WeatherCardProps {
   data: WeatherData;
+  themeGlow: string;
+  textPrimary: string;
+  textSecondary: string;
+  glass: string;
+  cardBorder: string;
 }
 
 export default function WeatherCard({
-  data,
+  data, 
+  themeGlow,
+  textPrimary,
+  textSecondary,
+  glass,
+  cardBorder,
 }: WeatherCardProps) {
 
   const iconUrl =
     `https://openweathermap.org/img/wn/${data.weather[0].icon}@4x.png`;
 
+  const localTime = new Date( data.dt * 1000 + data.timezone * 1000);
+
+  const formattedTime = localTime.toUTCString().slice(17, 22);
+
   return (
     <div
-      className="
+      className={`
         mt-6
         rounded-3xl
-        bg-white/10
+        ${glass}
         backdrop-blur-lg
-        border border-white/20
+        border
+        ${cardBorder}
         shadow-2xl
         p-8
-        text-white
         overflow-hidden
         relative
-      "
+      `}
     >
 
       {/* Glow background */}
       <div
-        className="
+        className={`
           absolute
           inset-0
           bg-gradient-to-br
-          from-cyan-400/20
-          to-blue-600/20
+          ${themeGlow}
           pointer-events-none
-        "
+        `}
       />
 
       {/* Conteúdo */}
       <div className="relative z-10">
 
         {/* Topo */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 
           <div>
-            <h2 className="text-3xl font-bold">
+            <h2 className={`text-3xl font-bold ${textPrimary}`}>
               {data.name}
             </h2>
 
-            <p className="capitalize text-white/70 mt-1">
+            <p className={`capitalize ${textSecondary} mt-1`}>
               {data.weather[0].description}
             </p>
+
+            <p className={`text-sm ${textSecondary} mt-1`}>
+              Horário local: {formattedTime}
+            </p>
+
           </div>
 
           <img
@@ -67,11 +85,11 @@ export default function WeatherCard({
         {/* Temperatura */}
         <div className="mt-6">
 
-          <p className="text-7xl font-black tracking-tight">
-            {Math.round(data.main.temp)}°
+          <p className={`text-7xl font-black tracking-tight ${textPrimary}`}>
+            {Math.round(data.main.temp)}°C
           </p>
 
-          <p className="text-white/70 mt-2">
+          <p className={`mt-2 ${textSecondary}`}>
             Sensação térmica de{" "}
             {Math.round(data.main.feels_like)}°C
           </p>
@@ -79,17 +97,9 @@ export default function WeatherCard({
         </div>
 
         {/* Infos extras */}
-        <div
-          className="
-            grid
-            grid-cols-2
-            gap-4
-            mt-8
-          "
-        >
-
-          <div className="bg-white/10 rounded-2xl p-4">
-            <p className="text-sm text-white/60">
+        <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className={`rounded-2xl p-4 bg-black/5 backdrop-blur-md transition-all duration-700 ${textPrimary}`}>
+            <p className={`text-sm ${textSecondary}`}>
               Umidade
             </p>
 
@@ -98,8 +108,8 @@ export default function WeatherCard({
             </p>
           </div>
 
-          <div className="bg-white/10 rounded-2xl p-4">
-            <p className="text-sm text-white/60">
+          <div className={`rounded-2xl p-4 bg-black/5 backdrop-blur-md ${textPrimary} `}>
+            <p className={`text-sm ${textSecondary}`}>
               Vento
             </p>
 
