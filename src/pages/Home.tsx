@@ -10,8 +10,9 @@ import { getForecastByCity } from "../services/forecastService";
 import ForecastList from "../components/forecast/ForecastList";
 import type { ForecastItem } from "../types/forecast";
 
-import { getWeatherTheme } from "../utils/weatherTheme";
+
 import { normalizeCityName } from "../utils/cityAliases";
+import { resolveWeatherTheme } from "../themes/weatherThemeResolver";
 
 export default function Home() {
   const [city, setCity] = useState("");
@@ -71,10 +72,10 @@ export default function Home() {
 
     const currentWeather = weather?.weather[0].main;
     const forecastDays = 5;
-    const theme = getWeatherTheme(currentWeather, isNight);
+    const weatherUI  = resolveWeatherTheme(currentWeather, isNight);
 
     return (
-    <main className={`min-h-screen ${theme.background} flex items-center justify-center p-6 transition-all duration-1000`}>
+    <main className={`min-h-screen ${weatherUI.theme.background} flex items-center justify-center p-6 transition-all duration-1000`}>
         
         <div className="w-full max-w-xl">
         
@@ -83,14 +84,14 @@ export default function Home() {
                 <h1 className={`
                     text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
                     font-black mb-2 md:mb-3 
-                    ${theme.textPrimary}
+                    ${weatherUI.theme.textPrimary}
                 `}>
                     Planejador de Clima
                 </h1>
 
                 <p className={`
                     text-sm sm:text-base md:text-lg 
-                    ${theme.textSecondary}
+                    ${weatherUI.theme.textSecondary}
                     max-w-2xl mx-auto
                 `}>
                     Planeje seus compromissos com base na previsão do tempo
@@ -98,15 +99,15 @@ export default function Home() {
             </div>
 
             {/* Card principal */}
-            <div className={`card ${theme.glass} backdrop-blur-xl border ${theme.cardBorder} shadow-2xl p-10 w-full max-w-xl`}>      
+            <div className={`card ${weatherUI.theme.glass} backdrop-blur-xl border ${weatherUI.theme.cardBorder} shadow-2xl p-10 w-full max-w-xl`}>      
                 <SearchBar
                     city={city}
                     setCity={setCity}
                     onSearch={handleSearch}
                     loading={loading}
-                    textPrimary={theme.textPrimary}
-                    glass={theme.glass}
-                    cardBorder={theme.cardBorder}
+                    textPrimary={weatherUI.theme.textPrimary}
+                    glass={weatherUI.theme.glass}
+                    cardBorder={weatherUI.theme.cardBorder}
                 />
 
                 {error && (
@@ -118,11 +119,11 @@ export default function Home() {
                 {weather && (
                 <WeatherCard
                     data={weather}
-                    themeGlow={theme.cardGlow}
-                    textPrimary={theme.textPrimary}
-                    textSecondary={theme.textSecondary}
-                    glass={theme.glass}
-                    cardBorder={theme.cardBorder}
+                    themeGlow={weatherUI.theme.cardGlow}
+                    textPrimary={weatherUI.theme.textPrimary}
+                    textSecondary={weatherUI.theme.textSecondary}
+                    glass={weatherUI.theme.glass}
+                    cardBorder={weatherUI.theme.cardBorder}
                 />
                 )}
 
@@ -130,10 +131,10 @@ export default function Home() {
                 <ForecastList
                     items={forecast}
                     days={forecastDays}
-                    textPrimary={theme.textPrimary}
-                    textSecondary={theme.textSecondary}
-                    glass={theme.glass}
-                    cardBorder={theme.cardBorder}
+                    textPrimary={weatherUI.theme.textPrimary}
+                    textSecondary={weatherUI.theme.textSecondary}
+                    glass={weatherUI.theme.glass}
+                    cardBorder={weatherUI.theme.cardBorder}
                 />
                 )}            
 
