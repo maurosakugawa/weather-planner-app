@@ -132,7 +132,7 @@ export default function Home() {
                     ${theme.textPrimary}
                 `}
                 >
-                Planejador de Clima
+                    ClimApp
                 </h1>
 
                 <p
@@ -142,7 +142,7 @@ export default function Home() {
                     max-w-2xl mx-auto
                 `}
                 >
-                Planeje seus compromissos com base na previsão do tempo
+                    Planeje seus compromissos com base na previsão do tempo
                 </p>
             </div>
 
